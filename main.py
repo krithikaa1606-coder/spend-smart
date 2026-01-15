@@ -17,6 +17,69 @@ def create_table():
     """)
     conn.commit()
     conn.close()
+def add_income():
+    category = input("Enter income category (Salary, Freelance, etc): ")
+    amount = float(input("Enter income amount: "))
+    date = input("Enter date (YYYY-MM-DD): ")
+
+    conn = connect_db()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "INSERT INTO transactions (type, category, amount, date) VALUES (?, ?, ?, ?)",
+        ("Income", category, amount, date)
+    )
+
+    conn.commit()
+    conn.close()
+
+    print("Income added successfully!")
+def add_expense():
+    category = input("Enter expense category (Food, Travel, etc): ")
+    amount = float(input("Enter expense amount: "))
+    date = input("Enter date (YYYY-MM-DD): ")
+
+    conn = connect_db()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "INSERT INTO transactions (type, category, amount, date) VALUES (?, ?, ?, ?)",
+        ("Expense", category, amount, date)
+    )
+
+    conn.commit()
+    conn.close()
+
+    print("Expense added successfully!")
+
+def view_report():
+    conn = connect_db()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM transactions")
+    records = cursor.fetchall()
+
+    total_income = 0
+    total_expense = 0
+
+    print("\n---- Financial Report ----")
+    print("ID | Type | Category | Amount | Date")
+    print("-----------------------------------")
+
+    for row in records:
+        id, type_, category, amount, date = row
+        print(f"{id} | {type_} | {category} | {amount} | {date}")
+
+        if type_ == "Income":
+            total_income += amount
+        else:
+            total_expense += amount
+
+    print("\nTotal Income:", total_income)
+    print("Total Expense:", total_expense)
+    print("Balance:", total_income - total_expense)
+
+    conn.close()
 
 def show_menu():
     print("\n--- SpendSmart : Student Finance Manager ---")
@@ -32,11 +95,11 @@ while True:
     choice = input("Enter your choice: ")
 
     if choice == "1":
-        print("Income feature coming soon")
+        add_income()
     elif choice == "2":
-        print("Expense feature coming soon")
+        add_expense()
     elif choice == "3":
-        print("Report feature coming soon")
+        view_report()
     elif choice == "4":
         print("Goodbye!")
         break
